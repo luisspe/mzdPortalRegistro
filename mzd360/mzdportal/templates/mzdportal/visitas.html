@@ -206,7 +206,7 @@
     emailInput.addEventListener("input", function() {
         const emailValue = emailInput.value;
 
-        if (emailValue.endsWith(".com")) {
+        if (emailValue.endsWith(".com") || emailValue.endsWith(".mx")) {
             fetch(`/fetch_client/?email=${emailValue}`)
             .then(response => response.json())
             .then(data => {

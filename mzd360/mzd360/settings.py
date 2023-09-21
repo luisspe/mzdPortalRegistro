@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+from decouple import config, Csv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +20,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o9%^m@r5077p4$^^3)k*cj*i$lnfwullg3)x#s#e2n4&w&h3c8'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+API_KEY = config('API_KEY')
+
+# Google OAuth settings
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
+GOOGLE_PROJECT_ID = config('GOOGLE_PROJECT_ID')
+GOOGLE_AUTH_URI = config('GOOGLE_AUTH_URI')
+GOOGLE_TOKEN_URI = config('GOOGLE_TOKEN_URI')
+GOOGLE_AUTH_PROVIDER_CERT_URL = config('GOOGLE_AUTH_PROVIDER_CERT_URL')
+GOOGLE_REDIRECT_URIS = config('GOOGLE_REDIRECT_URIS', cast=Csv())
 
 ALLOWED_HOSTS = []
 
