@@ -1,3 +1,4 @@
+
 function data() {
   function getThemeFromLocalStorage() {
     // if user already changed the theme, use it
@@ -15,6 +16,8 @@ function data() {
   function setThemeToLocalStorage(value) {
     window.localStorage.setItem('dark', value)
   }
+
+  
 
   return {
     dark: getThemeFromLocalStorage(),
@@ -55,11 +58,15 @@ function data() {
     isModalOpen: false,
     trapCleanup: null,
     openModal() {
-      this.isModalOpen = true
+      this.isModalOpen = true;
+      const burger = document.getElementById("burger");
+      burger.style.display = "none";
       this.trapCleanup = focusTrap(document.querySelector('#modal'))
     },
     closeModal() {
-      this.isModalOpen = false
+      const burger = document.getElementById("burger");
+      burger.style.display = "block";
+      this.isModalOpen = false;
       this.trapCleanup()
     },
 

@@ -100,10 +100,10 @@
       <!-- Modal backdrop. This what you want to place close to the closing body tag -->
       <div
         x-show="isModalOpen"
-        x-transition:enter="transition ease-out duration-150"
+        x-transition:enter="transition ease-out duration-650"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave="transition ease-in duration-650"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
@@ -226,6 +226,10 @@
 });
 document.addEventListener("DOMContentLoaded", function() {
     const emailInput = document.getElementById("correo");
+    const burger = document.getElementById("burger");
+
+      // Función para ocultar o mostrar el botón burger
+    
 
     emailInput.addEventListener("input", function() {
         const emailValue = emailInput.value;

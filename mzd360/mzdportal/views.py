@@ -5,7 +5,7 @@ from .models import Visita  # Importa el modelo de Visita
 from django.http import JsonResponse
 import requests
 from uuid import uuid4
-
+from .forms import SpecialEventForm
 
 # Configuración de la API
 api_url = 'https://5pej009iy2.execute-api.us-east-1.amazonaws.com/dev/apimzd/'
@@ -166,6 +166,15 @@ def perfil_clientes(request):
 @login_required
 def eventos(request):
     context = {}
+    if request.method == 'POST':
+        form = SpecialEventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Puedes agregar un mensaje de éxito o redirigir a otra página si lo prefieres
+            context['message'] = "Evento especial registrado con éxito!"
+    else:
+        form = SpecialEventForm()
+    context['form'] = form
     return render(request, "mzdportal/eventos.html", context)
 
 # Vista para cerrar sesión

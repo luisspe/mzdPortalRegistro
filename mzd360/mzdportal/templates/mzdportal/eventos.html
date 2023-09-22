@@ -18,18 +18,13 @@
     @click="openModal" 
     class="px-6 py-1 text-lg font-semibold text-white transition duration-200 ease-in-out transform bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline focus:scale-105 active:bg-purple-800 md:ml-4 md:py-2 dark:bg-purple-600 dark:text-white"
 >
-    Registrar Visita
+    Crear Evento
 </button>
 {% endblock %}
 {% block content %}
-<div class="container mx-auto mt-10">
-    <h2 class="text-xl font-bold mb-5">Registro de Eventos Especiales</h2>
-
-    <!-- Sección para crear un nuevo evento especial -->
-    
-
+<div class="container mx-auto mt-10 h-screen">
     <!-- Sección para registrar clientes en un evento especial -->
-    <div class="bg-white p-5 rounded shadow">
+    <div class="bg-white p-5 rounded shadow mt-6">
         <h3 class="text-lg font-semibold mb-3">Registrar Cliente en Evento Especial</h3>
         <form method="post" action="">
             {% csrf_token %}
@@ -102,39 +97,35 @@
             </button>
           </header>
           <!-- Modal body -->
-          <form method="post" action="{% url 'visitas-sucursal' %}">
+          <form method="post" action="">
             {% csrf_token %}
-            <div class="mt-4 mb-6 overflow-y-auto" style="max-height: 60vh;">
-              <!-- Modal title -->
-              <p
-                class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
-              >
-                Registrar datos de evento
-              </p>
-              <!-- Modal form -->
-              
-                  
-
-                  <label for="nombre_evento" class="block text-sm font-medium text-gray-600">Nombre de evento</label>
-                
-                  <input type="text" name="tipo_evento" id="nombre_evento" placeholder="Nombre del evento" required class="mt-1 p-2 w-full border rounded-md">
-              
-                  
-                  <label for="ubicacion_evento" class="block text-sm font-medium text-gray-600">Ubicacion del evento</label>
-                  <input id="ubicacion" name="ubicacion_evento" type="text" placeholder="ubicacion_evento" class="w-full px-4 py-2 mb-4 border rounded-md">
-                
-                  
-                
-                  <label for="fecha_inicio_evento" class="block text-sm font-medium text-gray-600">Fecha de inicio</label>
-                  <input id="fecha_inicio_evento" name="fecha_inicio_evento" type="date" placeholder="" class="w-full px-4 py-2 mb-4 border rounded-md">
-                
-                  <label for="fecha_final_evento" class="block text-sm font-medium text-gray-600">Fecha de finalización</label>
-                  <input id="fecha_final_evento" name="fecha_final_evento" type="date" placeholder="" class="w-full px-4 py-2 mb-4 border rounded-md">
-                
-                  <label for="vendedor" class="block text-sm font-medium text-gray-600">Vendedor</label>
-                  <input id="vendedor" name="vendedor" type="text" placeholder="Vendedor" class="w-full px-4 py-2 mb-4 border rounded-md">
-                
-            </div>
+            <label for="event_id" class="block text-sm font-medium text-gray-600">ID del Evento</label>
+            <input id="event_id" name="event_id" type="text" placeholder="ID del Evento" class="w-full px-4 py-2 mb-4 border rounded-md">
+            
+            <label for="prospect_profile" class="block text-sm font-medium text-gray-600">Perfil Prospecto</label>
+            <select id="prospect_profile" name="prospect_profile" class="w-full px-4 py-2 mb-4 border rounded-md">
+                <!-- Aquí puedes agregar las opciones para los diferentes perfiles prospecto -->
+                <option value="perfil1">Perfil 1</option>
+                <option value="perfil2">Perfil 2</option>
+                <!-- ... -->
+            </select>
+            
+            <label for="name" class="block text-sm font-medium text-gray-600">Nombre del Evento</label>
+            <input id="name" name="name" type="text" placeholder="Nombre del Evento" class="w-full px-4 py-2 mb-4 border rounded-md">
+            
+            <label for="location" class="block text-sm font-medium text-gray-600">Ubicación</label>
+            <input id="location" name="location" type="text" placeholder="Ubicación" class="w-full px-4 py-2 mb-4 border rounded-md">
+            
+            <label for="start_date" class="block text-sm font-medium text-gray-600">Fecha de Inicio</label>
+            <input id="start_date" name="start_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
+            
+            <label for="end_date" class="block text-sm font-medium text-gray-600">Fecha de Finalización</label>
+            <input id="end_date" name="end_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
+            
+            <!-- Aquí puedes agregar más campos si es necesario, como comentarios adicionales, etc. -->
+            
+            
+            
             <footer
               class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
             >
