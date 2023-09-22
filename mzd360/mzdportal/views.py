@@ -163,6 +163,11 @@ def perfil_clientes(request):
     context = {}
     return render(request, "mzdportal/clientes.html", context)
 
+@login_required
+def eventos(request):
+    context = {}
+    return render(request, "mzdportal/eventos.html", context)
+
 # Vista para cerrar sesión
 def logout_view(request):
     logout(request)

@@ -14,7 +14,7 @@ urlpatterns = [
     path("perfil-clientes", views.perfil_clientes, name='clientes'),
     path('fetch_client/', views.fetch_client_by_email, name='fetch_client_by_email'),
     path('fetch_client_visits/', views.fetch_client_visits, name='fetch_client_visits'),
-
+    path('registro/eventos', views.eventos, name='registro-eventos'),
 
     
 ]
