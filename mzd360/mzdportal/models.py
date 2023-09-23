@@ -1,20 +1,6 @@
 from django.db import models
 import uuid
 
-class SpecialEvent(models.Model):
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    prospect_profile = models.JSONField(blank=True, null=True)  # Campo para el perfil del prospecto
-    # Otros campos relevantes
-
-    def __str__(self):
-        return self.name
-    
-
-from django.db import models
 
 class PerfilProspecto(models.Model):
     ID_Perfil = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -68,6 +54,19 @@ class PerfilProspecto(models.Model):
 
     def __str__(self):
         return self.Nombre_Perfil
+    
+
+class SpecialEvent(models.Model):
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    prospect_profile = models.ForeignKey(PerfilProspecto, on_delete=models.CASCADE, related_name="events") 
+    # Otros campos relevantes
+
+    def __str__(self):
+        return self.name
 
 
 # Create your models here.
