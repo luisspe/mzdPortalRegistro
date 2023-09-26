@@ -1,4 +1,9 @@
 {% extends "mzdportal/home.html" %}
+{% load static %}
+{% block imports %}
+<link rel="stylesheet" href="{% static 'mzdportal/assets/css/card_animation.css' %}" />
+{% endblock %}
+
 
 {% block searchbar %}
 <div class="flex justify-center flex-1 lg:mr-32">
@@ -14,51 +19,79 @@
 </div>
 {% endblock %}
 {% block boton %}
-<button 
-    @click="openModal" 
-    class="px-6 py-1 text-lg font-semibold text-white transition duration-200 ease-in-out transform bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline focus:scale-105 active:bg-purple-800 md:ml-4 md:py-2 dark:bg-purple-600 dark:text-white"
->
-    Crear Evento
-</button>
+
 {% endblock %}
 {% block content %}
-<div class="container mx-auto mt-10 h-screen">
-    <!-- Sección para registrar clientes en un evento especial -->
-    <div class="bg-white p-5 rounded shadow mt-6">
-        <h3 class="text-lg font-semibold mb-3">Registrar Cliente en Evento Especial</h3>
-        <form method="post" action="">
-            {% csrf_token %}
-            <div class="mb-4">
-                <label for="event_id" class="block text-sm font-medium text-gray-700">ID del Evento</label>
-                <input type="text" name="event_id" id="event_id" required class="mt-1 p-2 w-full border rounded-md">
+
+
+
+        <div class="h-screen relative"> <!-- Añadido "relative" para posicionar el botón "+" respecto a este div -->
+            <!-- Botón "+" en la esquina superior derecha -->
+            
+            <div class="container mx-auto flex flex-wrap mt-6"> <!-- Aseguramos que las tarjetas se envuelvan con flex-wrap -->
+                <div class="w-full flex flex-wrap justify-between"> <!-- Cambiado a w-full para usar todo el ancho disponible -->
+                    <div class="ag-courses_item md:hidden mb-4 w-full md:w-1/2"> <!-- Ajustado para que ocupe la mitad del ancho en dispositivos medianos y grandes -->
+                        <a @click="openModal" class="ag-courses-item_link cursor-pointer">
+                            <div class="ag-courses-item_bg"></div>
+                            <div class="ag-courses-item_title">
+                                <div class="text-center text-white text-5xl">+</div>
+                                <p class="text-center text-white mt-2">Agregar Evento</p>
+                            </div>
+                        </a>
+                    </div>
+                    {% for evento in eventos %}
+                        {% if forloop.first %}
+                            <div class="ag-courses_item hidden md:block mb-4 w-full md:w-1/2"> <!-- Ajustado para que ocupe la mitad del ancho en dispositivos medianos y grandes -->
+                                <a @click="openModal" class="ag-courses-item_link cursor-pointer">
+                                    <div class="ag-courses-item_bg" style="height: 100px; width: 100px; top: -50px; right: -50px;"></div>
+                                    <div class="ag-courses-item_title">
+                                        <div class="ag-courses-item_date-box">
+                                            <div class="text-center text-white text-5xl">+</div>
+                                            <p class="text-center text-white mt-2">Agregar Evento</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+                        <div class="ag-courses_item mb-4 w-full md:w-1/2"> <!-- Ajustado para que ocupe la mitad del ancho en dispositivos medianos y grandes -->
+                            <a href="{% url 'evento_detalle' evento.event_id %}" class="ag-courses-item_link">
+                                <div class="ag-courses-item_bg"></div>
+                                <div class="ag-courses-item_title">
+                                    {{ evento.name }}
+                                </div>
+                                <div class="ag-courses-item_date-box">
+                                    Fecha de inicio:
+                                    <span class="ag-courses-item_date">
+                                        {{ evento.start_date }}
+                                    </span>
+                                </div>
+                                <div class="ag-courses-item_date-box">
+                                    Fecha de finalización:
+                                    <span class="ag-courses-item_date">
+                                        {{ evento.end_date }}
+                                    </span>
+                                </div>
+                                <div class="ag-courses-item_date-box">
+                                    Ubicación:
+                                    <span class="ag-courses-item_date">
+                                        {{ evento.location }}
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Cliente</label>
-                <input type="text" name="nombre" id="nombre" required class="mt-1 p-2 w-full border rounded-md">
-            </div>
-            <div class="mb-4">
-                <label for="correo" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" name="correo" id="correo" required class="mt-1 p-2 w-full border rounded-md">
-            </div>
-            <div class="mb-4">
-                <label for="numero" class="block text-sm font-medium text-gray-700">Número de Teléfono</label>
-                <input type="tel" name="numero" id="numero" required class="mt-1 p-2 w-full border rounded-md">
-            </div>
-            <!-- Aquí puedes agregar más campos si es necesario, como comentarios adicionales, etc. -->
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Registrar Cliente</button>
-        </form>
-    </div>
-</div>
-<div
-        x-show="isModalOpen"
-        x-transition:enter="transition ease-out duration-150"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
-      >
+        <div
+            x-show="isModalOpen"
+            x-transition:enter="transition ease-out duration-150"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-30 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center"
+        >
         <!-- Modal -->
         <div
           x-show="isModalOpen"
@@ -97,41 +130,54 @@
             </button>
           </header>
           <!-- Modal body -->
-          <form method="post" action="">
+          <form method="post" action="{% url 'registro-eventos' %}">
             {% csrf_token %}
-            <label for="event_id" class="block text-sm font-medium text-gray-600">ID del Evento</label>
-            <input id="event_id" name="event_id" type="text" placeholder="ID del Evento" class="w-full px-4 py-2 mb-4 border rounded-md">
-            
-            <label for="prospect_profile" class="block text-sm font-medium text-gray-600">Perfil Prospecto</label>
-            <select id="prospect_profile" name="prospect_profile" class="w-full px-4 py-2 mb-4 border rounded-md">
-                <!-- Aquí puedes agregar las opciones para los diferentes perfiles prospecto -->
-                <option value="perfil1">Perfil 1</option>
-                <option value="perfil2">Perfil 2</option>
-                <!-- ... -->
-            </select>
-            
-            <label for="name" class="block text-sm font-medium text-gray-600">Nombre del Evento</label>
-            <input id="name" name="name" type="text" placeholder="Nombre del Evento" class="w-full px-4 py-2 mb-4 border rounded-md">
-            
-            <label for="location" class="block text-sm font-medium text-gray-600">Ubicación</label>
-            <input id="location" name="location" type="text" placeholder="Ubicación" class="w-full px-4 py-2 mb-4 border rounded-md">
-            
-            <label for="start_date" class="block text-sm font-medium text-gray-600">Fecha de Inicio</label>
-            <input id="start_date" name="start_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
-            
-            <label for="end_date" class="block text-sm font-medium text-gray-600">Fecha de Finalización</label>
-            <input id="end_date" name="end_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
-            
-            <!-- Aquí puedes agregar más campos si es necesario, como comentarios adicionales, etc. -->
-            
-            
-            
+            <div class="mb-6 overflow-y-auto" style="max-height: 60vh;">
+                <label for="prospect_profile" class="block text-sm font-medium text-gray-600">Perfil Prospecto</label>
+                <select id="prospect_profile" name="prospect_profile" class="w-full px-4 py-2 mb-4 border rounded-md">
+                    
+
+                    {% for prospecto in perfiles_prospecto %}
+                        <option value="{{prospecto}}">{{prospecto}}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="name" class="block text-sm font-medium text-gray-600">Nombre del Evento</label>
+                <input id="name" name="name" type="text" placeholder="Nombre del Evento" class="w-full px-4 py-2 mb-4 border rounded-md">
+                
+                <label for="location" class="text-sm font-medium text-gray-600">Ubicación</label>
+                <div class="flex items-center mb-3" style="width: 100%;">
+                    <input id="location" name="location" type="text" placeholder="Ubicación" class="flex-grow px-4 py-2 border rounded-l-md " style="width: 90%;">
+                    <button onclick="geocodeAddress()" type="button" class="bg-purple-600 text-white p-2 rounded-r-md hover:bg-purple-700">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                
+
+
+                <div id="map" style="height: 230px; width: 100%; margin-bottom: 10px;"></div>
+
+                <!-- Campos ocultos para almacenar la latitud y longitud seleccionadas -->
+                <input type="hidden" id="latitud" name="latitud">
+                <input type="hidden" id="longitud" name="longitud">
+                
+                <label for="start_date" class="block text-sm font-medium text-gray-600">Fecha de Inicio</label>
+                <input id="start_date" name="start_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
+                
+                <label for="end_date" class="block text-sm font-medium text-gray-600">Fecha de Finalización</label>
+                <input id="end_date" name="end_date" type="datetime-local" class="w-full px-4 py-2 mb-4 border rounded-md">
+                
+                <!-- Aquí puedes agregar más campos si es necesario, como comentarios adicionales, etc. -->
+            </div>
+
             <footer
               class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800"
             >
               <button
                 @click="closeModal"
                 class="w-full px-5 py-3 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg sm:w-auto sm:px-4 sm:py-2 active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                type="button"
               >
                 Cancelar
               </button>
@@ -145,4 +191,77 @@
           </footer>
         </div>
       </div>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOUO38tZjIZD5D6MluhA2v3S8-6hwmwF0&libraries=places&callback=initializeMap"></script>
+
+    <script>
+        var map;
+        var geocoder;
+        var localMarker; // Referencia al marcador de la ubicación local
+
+        function initializeMap() {
+            geocoder = new google.maps.Geocoder();
+
+            // Inicializar el autocompletado
+            var input = document.getElementById('location');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    initMap(position.coords.latitude, position.coords.longitude);
+                }, function () {
+                    alert("Error al obtener la ubicación");
+                    initMap(); // Coordenadas predeterminadas
+                });
+            } else {
+                alert('Tu navegador no soporta geolocalización');
+                initMap(); // Coordenadas predeterminadas
+            }
+        }
+
+        function initMap(lat = 20.6736, lng = -103.3440) {
+            var userLocation = { lat: lat, lng: lng };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: userLocation
+            });
+
+            localMarker = new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(localMarker, 'dragend', function () {
+                document.getElementById('latitud').value = this.getPosition().lat();
+                document.getElementById('longitud').value = this.getPosition().lng();
+            });
+        }
+
+        function geocodeAddress() {
+            var address = document.getElementById('location').value;
+            geocoder.geocode({ 'address': address }, function (results, status) {
+                if (status === 'OK') {
+                    map.setCenter(results[0].geometry.location);
+                    
+                    // Elimina el marcador de la ubicación local
+                    if (localMarker) {
+                        localMarker.setMap(null);
+                    }
+
+                    // Crea un nuevo marcador en la ubicación buscada
+                    new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                    });
+
+                    document.getElementById('latitud').value = results[0].geometry.location.lat();
+                    document.getElementById('longitud').value = results[0].geometry.location.lng();
+                } else {
+                    alert('Geocode was not successful: ' + status);
+                }
+            });
+        }
+    </script>
+
 {% endblock %}

@@ -1,0 +1,74 @@
+{% extends "mzdportal/home.html" %}
+
+{% block searchbar %}
+
+<div class="flex justify-center flex-1 lg:mr-32">
+    
+  <div class="hidden flex justify-center flex-1 lg:mr-32">
+    <div
+      class="relative w-full md:w-1/2  max-w-xl mr-6 focus-within:text-purple-500"
+    >
+      
+      
+    </div>
+      
+</div>
+{% endblock %}
+{% block boton %}
+<button 
+    @click="openModal" 
+    class="px-6 py-1 text-lg font-semibold text-white transition duration-200 ease-in-out transform bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline focus:scale-105 active:bg-purple-800 md:ml-4 md:py-2 dark:bg-purple-600 dark:text-white"
+>
+    Crear Evento
+</button>
+{% endblock %}
+{% block content %}
+
+<div class="container mx-auto mt-6 h-screen">
+  <div class="bg-white p-5 rounded shadow mt-6 flex flex-wrap md:flex-nowrap justify-between">
+      
+      <!-- Información del evento -->
+      <!-- Información del evento -->
+      <div class="w-full md:w-1/2 mb-4 md:mb-0 pr-0 md:pr-4">
+        <h2 class="text-2xl font-bold mb-4">{{ evento.name }}</h2>
+        <p class="mb-2"><strong>Fecha de inicio:</strong> {{ evento.start_date|date:"d F Y H:i" }}</p>
+        <p class="mb-2"><strong>Fecha de finalización:</strong> {{ evento.end_date|date:"d F Y H:i" }}</p>
+        <p class="mb-2"><strong>Perfil de prospecto:</strong> {{ evento.prospect_profile.Nombre_Perfil }}</p>
+        <!-- Aquí puedes agregar más detalles del evento si lo deseas -->
+
+        <!-- Botones para mostrar y registrar clientes -->
+        <div class="mt-4 space-x-2">
+            <a href="" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mb-3 mr-3">Mostrar clientes registrados</a>
+            <a href="{% url 'registro_cliente_evento' evento.event_id %}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mb-3 mr-3">Registrar clientes</a>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="w-full md:w-1/2">
+        <div id="map" style="height: 300px;"></div>
+      </div>
+      
+  </div>
+</div>
+
+
+<script>
+  function initMap() {
+      var eventoLocation = { lat: parseFloat("{{ evento.latitude }}"), lng: parseFloat("{{ evento.longitude }}") };
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: eventoLocation
+      });
+
+      var marker = new google.maps.Marker({
+          position: eventoLocation,
+          map: map
+      });
+  }
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOUO38tZjIZD5D6MluhA2v3S8-6hwmwF0&callback=initMap"></script>
+
+
+{% endblock %}

@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Visita  # Importa el modelo de Visita
+from .models import Visita, SpecialEvent, PerfilProspecto, Cliente_Registro_Evento
 from django.http import JsonResponse
 import requests
 from uuid import uuid4
@@ -165,18 +165,83 @@ def perfil_clientes(request):
 
 @login_required
 def eventos(request):
-    context = {}
+    perfiles_prospecto = PerfilProspecto.objects.all()
+    eventos = SpecialEvent.objects.all()
+    context = {
+        'perfiles_prospecto': perfiles_prospecto,
+        'eventos': eventos,
+    }
     if request.method == 'POST':
-        form = SpecialEventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            # Puedes agregar un mensaje de éxito o redirigir a otra página si lo prefieres
-            context['message'] = "Evento especial registrado con éxito!"
-    else:
-        form = SpecialEventForm()
-    context['form'] = form
+        nombre = request.POST.get('name')
+        latitud = request.POST.get('latitud')
+        longitud = request.POST.get('longitud')
+        fecha_inicio = request.POST.get('start_date')
+        fecha_final = request.POST.get('end_date')
+        perfil_prospecto_id = request.POST.get('prospect_profile')
+        
+        # Obtener la instancia de PerfilProspecto usando el ID
+        perfil_prospecto_instance = PerfilProspecto.objects.get(Nombre_Perfil=perfil_prospecto_id)
+        
+        evento = SpecialEvent(
+            name=nombre,
+            latitude = latitud,
+            longitude = longitud,
+            start_date=fecha_inicio,
+            end_date=fecha_final,
+            prospect_profile=perfil_prospecto_instance,  # Asignar la instancia al campo
+        )
+        evento.save()
+
     return render(request, "mzdportal/eventos.html", context)
 
+def evento_detalle(request, event_id):
+    evento = get_object_or_404(SpecialEvent, event_id=event_id)
+    return render(request, 'mzdportal/detalles_eventos.html', {'evento': evento})
+
+def registro_cliente_evento(request, event_id):
+    evento = get_object_or_404(SpecialEvent, event_id=event_id)
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        telefono = request.POST.get('telefono')
+        vehiculo_interes = request.POST.get('vehiculo_interes')
+        rango_precio = request.POST.get('rango_precio')
+        como_se_entero = request.POST.get('entero_evento')
+        fecha_compra_estimada = request.POST.get('fecha_compra')
+        comentarios = request.POST.get('comentarios')
+        recibir_noticias = True if request.POST.get('recibir_noticias') == 'si' else False
+        metodo_contacto_preferido = request.POST.get('metodo_contacto')
+        interes_financiamiento = True if request.POST.get('interes_financiamiento') == 'si' else False
+        vehiculo_parte_pago = True if request.POST.get('vehiculo_parte_pago') == 'si' else False
+        valoracion_evento = request.POST.get('valoracion_evento')
+        feedback_evento = request.POST.get('feedback_evento')
+
+        cliente = Cliente_Registro_Evento(
+            nombre=nombre,
+            email=email,
+            telefono=telefono,
+            tipo_vehiculo=vehiculo_interes,  # Aquí está la corrección
+            rango_precio=rango_precio,
+            como_se_entero=como_se_entero,
+            fecha_compra_estimada=fecha_compra_estimada,
+            comentarios=comentarios,
+            recibir_noticias=recibir_noticias,
+            metodo_contacto_preferido=metodo_contacto_preferido,
+            interes_financiamiento=interes_financiamiento,
+            vehiculo_parte_pago=vehiculo_parte_pago,
+            valoracion_evento=valoracion_evento,
+            feedback_evento=feedback_evento
+        )
+        cliente.save()
+
+        
+        return redirect('registro_cliente_evento')  # Cambia esto a la URL donde quieres redirigir después de un registro exitoso
+
+    context = {
+        'evento': evento,
+    }
+    return render(request, 'mzdportal/registro_cliente_evento.html', context)
 # Vista para cerrar sesión
 def logout_view(request):
     logout(request)

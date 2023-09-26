@@ -1,0 +1,167 @@
+{% extends "mzdportal/home.html" %}
+
+{% block searchbar %}
+
+<div class="flex justify-center flex-1 lg:mr-32">
+    
+  <div class="hidden flex justify-center flex-1 lg:mr-32">
+    <div
+      class="relative w-full md:w-1/2  max-w-xl mr-6 focus-within:text-purple-500"
+    >
+      
+      
+    </div>
+      
+</div>
+{% endblock %}
+{% block boton %}
+
+{% endblock %}
+{% block content %}
+
+<div class="container mx-auto mt-6 h-screen">
+    <div class="bg-white p-5 rounded shadow">
+        <h2 class="text-2xl font-bold mb-4">Registro de Clientes - Evento de Autos</h2>
+        
+        <form action="{% url 'registro_cliente_evento' evento.event_id %}" method="post">
+            {% csrf_token %}
+            
+            <!-- Información Básica -->
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="telefono" class="block text-sm font-medium text-gray-700">Número de Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <!-- Información del Vehículo de Interés -->
+            <div class="mb-4">
+                <label for="modelo" class="block text-sm font-medium text-gray-700">Modelo de Interés:</label>
+                <input type="text" id="modelo" name="modelo" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="vehiculo_interes" class="block text-sm font-medium text-gray-700">Vehículo de Interés:</label>
+                <select id="vehiculo_interes" name="vehiculo_interes" class="mt-1 p-2 w-full border rounded-md">
+                    <option value="mazda2_sedan">MAZDA2 SEDÁN 2024</option>
+                    <option value="mazda2_hatchback">MAZDA2 HATCHBACK</option>
+                    <option value="mazda3_sedan">MAZDA3 SEDÁN 2023</option>
+                    <option value="mazda3_hatchback">MAZDA3 HATCHBACK</option>
+                    <option value="mazda_cx3">MAZDA CX-3</option>
+                    <option value="mazda_cx30">MAZDA CX-30</option>
+                    <option value="mazda_cx5">NUEVA MAZDA CX-5</option>
+                    <option value="mazda_cx50">MAZDA CX-50</option>
+                    <option value="mazda_cx90">MAZDA CX-90</option>
+                    <option value="mazda_mx5">MAZDA MX-5</option>
+                    <option value="mazda_mx5_rf">MAZDA MX-5 RF</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="rango_precio" class="block text-sm font-medium text-gray-700">Rango de Precio:</label>
+                <input type="text" id="rango_precio" name="rango_precio" placeholder="Ejemplo: $20,000 - $30,000" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <!-- Información Adicional -->
+            <div class="mb-4">
+                <label for="entero_evento" class="block text-sm font-medium text-gray-700">¿Cómo se enteró del evento?</label>
+                <input type="text" id="entero_evento" name="entero_evento" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="fecha_compra" class="block text-sm font-medium text-gray-700">Fecha Estimada de Compra:</label>
+                <input type="date" id="fecha_compra" name="fecha_compra" class="mt-1 p-2 w-full border rounded-md">
+            </div>
+
+            <div class="mb-4">
+                <label for="comentarios" class="block text-sm font-medium text-gray-700">Comentarios o Preguntas:</label>
+                <textarea id="comentarios" name="comentarios" rows="4" class="mt-1 p-2 w-full border rounded-md"></textarea>
+            </div>
+
+            <!-- Preferencias de Contacto -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">
+                    <input type="checkbox" name="recibir_noticias" value="si" class="mr-2">
+                    ¿Desea recibir noticias y promociones?
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label for="metodo_contacto" class="block text-sm font-medium text-gray-700">Método de Contacto Preferido:</label>
+                <select id="metodo_contacto" name="metodo_contacto" class="mt-1 p-2 w-full border rounded-md">
+                    <option value="email">Correo Electrónico</option>
+                    <option value="telefono">Llamada Telefónica</option>
+                    <option value="mensaje">Mensaje de Texto</option>
+                </select>
+            </div>
+
+            <!-- Información de Financiamiento -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">
+                    <input type="checkbox" name="interes_financiamiento" value="si" class="mr-2">
+                    ¿Está interesado en opciones de financiamiento?
+                </label>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">
+                    <input type="checkbox" name="vehiculo_parte_pago" value="si" class="mr-2">
+                    ¿Tiene un vehículo para dar en parte de pago?
+                </label>
+            </div>
+
+            <!-- Feedback sobre el Evento -->
+            <div class="mb-4">
+                <label for="valoracion_evento" class="block text-sm font-medium text-gray-700">Valoración del Evento:</label>
+                <select id="valoracion_evento" name="valoracion_evento" class="mt-1 p-2 w-full border rounded-md">
+                    <option value="1">1 - Malo</option>
+                    <option value="2">2 - Regular</option>
+                    <option value="3">3 - Bueno</option>
+                    <option value="4">4 - Muy Bueno</option>
+                    <option value="5">5 - Excelente</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="feedback_evento" class="block text-sm font-medium text-gray-700">Sugerencias o Comentarios sobre el Evento:</label>
+                <textarea id="feedback_evento" name="feedback_evento" rows="4" class="mt-1 p-2 w-full border rounded-md"></textarea>
+            </div>
+
+            <!-- Botón de Envío -->
+            <div class="mt-4">
+                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Registrar Cliente</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+  function initMap() {
+      var eventoLocation = { lat: parseFloat("{{ evento.latitude }}"), lng: parseFloat("{{ evento.longitude }}") };
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: eventoLocation
+      });
+
+      var marker = new google.maps.Marker({
+          position: eventoLocation,
+          map: map
+      });
+  }
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOUO38tZjIZD5D6MluhA2v3S8-6hwmwF0&callback=initMap"></script>
+
+
+{% endblock %}

@@ -3,7 +3,7 @@ import uuid
 
 
 class PerfilProspecto(models.Model):
-    ID_Perfil = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id_perfil = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     Nombre_Perfil = models.CharField(max_length=255, verbose_name="Nombre del Perfil")
     
     Rango_Edad = models.CharField(max_length=50, verbose_name="Rango de Edad")
@@ -50,7 +50,7 @@ class PerfilProspecto(models.Model):
     
     Vehiculo_Actual = models.CharField(max_length=255, blank=True, null=True, verbose_name="Vehículo Actual (si tiene)")
     
-    Observaciones = models.TextField(blank=True, null=True, verbose_name="Observaciones Adicionales")
+    datos_adicionales = models.JSONField(blank=True, null=True)  # Almacena campos dinámicos
 
     def __str__(self):
         return self.Nombre_Perfil
@@ -59,14 +59,70 @@ class PerfilProspecto(models.Model):
 class SpecialEvent(models.Model):
     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
+    
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    prospect_profile = models.ForeignKey(PerfilProspecto, on_delete=models.CASCADE, related_name="events") 
+    prospect_profile = models.ForeignKey(PerfilProspecto, on_delete=models.CASCADE, related_name="events")
+    latitude = models.FloatField(null=True, blank=True)  # Campo para la latitud
+    longitude = models.FloatField(null=True, blank=True)  # Campo para la longitud 
     # Otros campos relevantes
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Eventos especiales"
+        verbose_name_plural = "Eventos especiales"
+
+from django.db import models
+
+class Cliente_Registro_Evento(models.Model):
+    nombre = models.CharField(max_length=255, verbose_name="Nombre Completo")
+    email = models.EmailField(verbose_name="Correo Electrónico")
+    telefono = models.CharField(max_length=20, verbose_name="Número de Teléfono")
+    VEHICULO_INTERES_CHOICES = [
+        ('mazda2_sedan', 'MAZDA2 SEDÁN 2024'),
+        ('mazda2_hatchback', 'MAZDA2 HATCHBACK'),
+        ('mazda3_sedan', 'MAZDA3 SEDÁN 2023'),
+        ('mazda3_hatchback', 'MAZDA3 HATCHBACK'),
+        ('mazda_cx3', 'MAZDA CX-3'),
+        ('mazda_cx30', 'MAZDA CX-30'),
+        ('mazda_cx5', 'NUEVA MAZDA CX-5'),
+        ('mazda_cx50', 'MAZDA CX-50'),
+        ('mazda_cx90', 'MAZDA CX-90'),
+        ('mazda_mx5', 'MAZDA MX-5'),
+        ('mazda_mx5_rf', 'MAZDA MX-5 RF'),
+    ]
+    tipo_vehiculo = models.CharField(max_length=50, choices=VEHICULO_INTERES_CHOICES, verbose_name="Tipo de Vehículo")
+    rango_precio = models.CharField(max_length=50, verbose_name="Rango de Precio")
+    como_se_entero = models.CharField(max_length=255, verbose_name="¿Cómo se enteró del evento?")
+    fecha_compra_estimada = models.DateField(verbose_name="Fecha Estimada de Compra")
+    comentarios = models.TextField(verbose_name="Comentarios o Preguntas", blank=True)
+    recibir_noticias = models.BooleanField(default=False, verbose_name="¿Desea recibir noticias y promociones?")
+    METODO_CONTACTO_CHOICES = [
+        ('email', 'Correo Electrónico'),
+        ('telefono', 'Llamada Telefónica'),
+        ('mensaje', 'Mensaje de Texto'),
+    ]
+    metodo_contacto_preferido = models.CharField(max_length=50, choices=METODO_CONTACTO_CHOICES, verbose_name="Método de Contacto Preferido")
+    interes_financiamiento = models.BooleanField(default=False, verbose_name="¿Está interesado en opciones de financiamiento?")
+    vehiculo_parte_pago = models.BooleanField(default=False, verbose_name="¿Tiene un vehículo para dar en parte de pago?")
+    VALORACION_EVENTO_CHOICES = [
+        (1, '1 - Malo'),
+        (2, '2 - Regular'),
+        (3, '3 - Bueno'),
+        (4, '4 - Muy Bueno'),
+        (5, '5 - Excelente'),
+    ]
+    valoracion_evento = models.PositiveSmallIntegerField(choices=VALORACION_EVENTO_CHOICES, verbose_name="Valoración del Evento")
+    feedback_evento = models.TextField(verbose_name="Sugerencias o Comentarios sobre el Evento", blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Clientes Registrados en Eventos"
+        verbose_name_plural = "Clientes Registrados en Eventos"
 
 
 # Create your models here.
@@ -77,6 +133,8 @@ class Visita(models.Model):
     estado = models.CharField(max_length=50)
     fecha_hora_checkin = models.DateTimeField(auto_now_add=True)
     fecha_hora_checkout = models.DateTimeField(null=True, blank=True)
+
+
     
 
 
