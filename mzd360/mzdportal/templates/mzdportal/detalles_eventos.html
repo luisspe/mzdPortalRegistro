@@ -14,14 +14,7 @@
       
 </div>
 {% endblock %}
-{% block boton %}
-<button 
-    @click="openModal" 
-    class="px-6 py-1 text-lg font-semibold text-white transition duration-200 ease-in-out transform bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline focus:scale-105 active:bg-purple-800 md:ml-4 md:py-2 dark:bg-purple-600 dark:text-white"
->
-    Crear Evento
-</button>
-{% endblock %}
+
 {% block content %}
 
 <div class="container mx-auto mt-6 h-screen">
@@ -38,7 +31,7 @@
 
         <!-- Botones para mostrar y registrar clientes -->
         <div class="mt-4 space-x-2">
-            <a href="" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mb-3 mr-3">Mostrar clientes registrados</a>
+            <a href="{% url 'ver_clientes_evento' evento.event_id %}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mb-3 mr-3">Mostrar clientes registrados</a>
             <a href="{% url 'registro_cliente_evento' evento.event_id %}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 inline-block mb-3 mr-3">Registrar clientes</a>
         </div>
       </div>

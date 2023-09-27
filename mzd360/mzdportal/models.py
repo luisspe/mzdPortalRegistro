@@ -74,12 +74,15 @@ class SpecialEvent(models.Model):
         verbose_name = "Eventos especiales"
         verbose_name_plural = "Eventos especiales"
 
-from django.db import models
+
 
 class Cliente_Registro_Evento(models.Model):
     nombre = models.CharField(max_length=255, verbose_name="Nombre Completo")
     email = models.EmailField(verbose_name="Correo Electrónico")
     telefono = models.CharField(max_length=20, verbose_name="Número de Teléfono")
+    evento = models.ForeignKey(SpecialEvent, on_delete=models.CASCADE, related_name="events", null=True)
+    client_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     VEHICULO_INTERES_CHOICES = [
         ('mazda2_sedan', 'MAZDA2 SEDÁN 2024'),
         ('mazda2_hatchback', 'MAZDA2 HATCHBACK'),
@@ -94,10 +97,10 @@ class Cliente_Registro_Evento(models.Model):
         ('mazda_mx5_rf', 'MAZDA MX-5 RF'),
     ]
     tipo_vehiculo = models.CharField(max_length=50, choices=VEHICULO_INTERES_CHOICES, verbose_name="Tipo de Vehículo")
-    rango_precio = models.CharField(max_length=50, verbose_name="Rango de Precio")
+    
     como_se_entero = models.CharField(max_length=255, verbose_name="¿Cómo se enteró del evento?")
-    fecha_compra_estimada = models.DateField(verbose_name="Fecha Estimada de Compra")
-    comentarios = models.TextField(verbose_name="Comentarios o Preguntas", blank=True)
+    
+    
     recibir_noticias = models.BooleanField(default=False, verbose_name="¿Desea recibir noticias y promociones?")
     METODO_CONTACTO_CHOICES = [
         ('email', 'Correo Electrónico'),
@@ -130,7 +133,7 @@ class Visita(models.Model):
     client_id = models.CharField(max_length=100)
     vendedor_id = models.CharField(max_length=100)
     unidad_de_interes = models.CharField(max_length=100)
-    estado = models.CharField(max_length=50)
+    concepto = models.CharField(max_length=50)
     fecha_hora_checkin = models.DateTimeField(auto_now_add=True)
     fecha_hora_checkout = models.DateTimeField(null=True, blank=True)
 

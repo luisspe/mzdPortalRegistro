@@ -1,0 +1,144 @@
+{% extends "mzdportal/home.html" %}
+
+{% block content %}
+<div class="printable-content site-section h-screen">
+    <section class="h-full pb-16 overflow-y-auto">
+        <div class="">
+            <h2 class="styled-header text-center mb-4">{{ evento.name }}</h2>
+            <div class="action-buttons text-center mt-4 mb-6">
+                <a href="{% url 'export_clientes_excel' %}" class="btn btn-success mr-6">Exportar a Excel</a>
+                <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+            </div>
+
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Vehículo de Interés</th>
+                        <th>¿Cómo se enteró?</th>
+                        <th>¿Desea recibir noticias?</th>
+                        <th>Método de Contacto Preferido</th>
+                        <th>¿Interesado en financiamiento?</th>
+                        <th>¿Vehículo para parte de pago?</th>
+                        <th>Valoración del Evento</th>
+                        <th>Feedback del Evento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.nombre }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.telefono }}</td>
+                        <td>{{ cliente.get_tipo_vehiculo_display }}</td>
+                        <td>{{ cliente.como_se_entero }}</td>
+                        <td>{{ cliente.recibir_noticias|yesno:"Sí,No" }}</td>
+                        <td>{{ cliente.get_metodo_contacto_preferido_display }}</td>
+                        <td>{{ cliente.interes_financiamiento|yesno:"Sí,No" }}</td>
+                        <td>{{ cliente.vehiculo_parte_pago|yesno:"Sí,No" }}</td>
+                        <td>{{ cliente.get_valoracion_evento_display }}</td>
+                        <td>{{ cliente.feedback_evento }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            
+            
+        </div>
+    </section>
+    
+</div>
+
+<style>
+    .printable-content {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.075);
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .styled-header {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .printable-content, .printable-content * {
+            visibility: visible;
+        }
+
+        .printable-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        /* Ocultar los botones al imprimir */
+        .action-buttons {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

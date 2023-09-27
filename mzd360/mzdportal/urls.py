@@ -16,7 +16,9 @@ urlpatterns = [
     path('fetch_client_visits/', views.fetch_client_visits, name='fetch_client_visits'),
     path('registro/eventos', views.eventos, name='registro-eventos'),
     path('evento/<uuid:event_id>/', views.evento_detalle, name='evento_detalle'),
-    path('registro/cliente/evento/<uuid:event_id>/', views.registro_cliente_evento, name='registro_cliente_evento')
+    path('registro/cliente/evento/<uuid:event_id>/', views.registro_cliente_evento, name='registro_cliente_evento'),
+    path('ver/clientes/evento/<uuid:event_id>/', views.ver_clientes_evento, name='ver_clientes_evento'),
+    path('export/excel/', views.export_clientes_excel, name='export_clientes_excel'),
 
     
 ]

@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .models import Visita, SpecialEvent, PerfilProspecto, Cliente_Registro_Evento
 from django.http import JsonResponse
+from django.http import HttpResponse
 import requests
 from uuid import uuid4
 from .forms import SpecialEventForm
+
+#excel
+import xlwt
 
 # Configuración de la API
 api_url = 'https://5pej009iy2.execute-api.us-east-1.amazonaws.com/dev/apimzd/'
@@ -14,6 +19,44 @@ headers = {'x-api-key': 'IUPDlxEc2i2xxCYpmmnGL2JmqhVRkQba1n9Tbl6B'}
 # Vista para crear un usuario
 def createUser(request):
     return render(request, 'mzdportal/create-account.html')
+
+def export_clientes_excel(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Clientes registrados.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Clientes')
+
+    # Define las columnas
+    columns = [
+        'Nombre', 'Email', 'Teléfono', 'Vehículo de Interés',
+        '¿Cómo se enteró?', '¿Desea recibir noticias?', 'Método de Contacto Preferido',
+        '¿Interesado en financiamiento?', '¿Vehículo para parte de pago?', 'Valoración del Evento',
+        'Feedback del Evento'
+    ]
+
+    # Escribe las columnas en la hoja
+    for col_num, column_title in enumerate(columns):
+        ws.write(0, col_num, column_title)
+
+    # Obtiene los datos de los clientes
+    clientes = Cliente_Registro_Evento.objects.all()
+
+    row_num = 1
+    for cliente in clientes:
+        row = [
+            cliente.nombre, cliente.email, cliente.telefono, cliente.get_tipo_vehiculo_display(),
+            cliente.como_se_entero, cliente.recibir_noticias, cliente.get_metodo_contacto_preferido_display(),
+            cliente.interes_financiamiento, cliente.vehiculo_parte_pago, cliente.get_valoracion_evento_display(),
+            cliente.feedback_evento
+        ]
+        for col_num, cell_value in enumerate(row):
+            ws.write(row_num, col_num, cell_value)
+
+        row_num += 1
+
+    wb.save(response)
+    return response
 
 # Vista de inicio
 @login_required
@@ -87,18 +130,23 @@ def get_number_of_visits(client_id, headers, api_url):
 
 # Función para crear un evento o un cliente
 def create_event_or_client(request, client_info, event_info, headers, api_url):
+    """
+    Crea un cliente o un evento en la API.
+    Si el cliente ya existe, solo crea el evento.
+    Si el cliente no existe, primero crea el cliente y luego el evento.
+    """
     response = requests.get(f"{api_url}clients/query/{client_info['email']}/", headers=headers)
     if response.status_code == 200:
         client_data = response.json()
         client_id = client_data['client_id']
-        num_visits = get_number_of_visits(client_id, headers, api_url)
-        event_info["event_data"]["visit"] = f"P{num_visits + 1}"
+        #num_visits = get_number_of_visits(client_id, headers, api_url)
+        #event_info["event_data"]["visit"] = f"P{num_visits + 1}"
     else:
         client_id = str(uuid4())
         client_info['client_id'] = client_id
         response = requests.post(f"{api_url}clients/create/", headers=headers, json=client_info)
         if response.status_code == 201:
-            event_info["event_data"]['visit'] = "P1"
+            #event_info["event_data"]['visit'] = "P1"
             event_info['client_id'] = client_id
             response = requests.post(f"{api_url}events/create/", headers=headers, json=event_info)
             return client_id, "Evento creado exitosamente" if response.status_code == 201 else "Error al crear el evento"
@@ -116,6 +164,7 @@ def visitas(request):
         numero = request.POST.get('numero')
         unidad = request.POST.get('unidad')
         vendedor = request.POST.get('vendedor')
+        concepto = request.POST.get('concepto')
         client_info = {
             'name': nombre,
             'email': correo,
@@ -126,7 +175,7 @@ def visitas(request):
         event_info = {
             "event_type": "visit",
             "event_data": {
-                "visit": 0
+                "concept": concepto
             }
         }
         client_id, result = create_event_or_client(request, client_info, event_info, headers, api_url)
@@ -136,7 +185,7 @@ def visitas(request):
             client_id=client_id,
             vendedor_id=vendedor,
             unidad_de_interes=unidad,
-            estado="En Recepción"
+            concepto=concepto
         )
         visita.save()
         
@@ -159,6 +208,7 @@ def visitas(request):
     return render(request, "mzdportal/visitas.html", context)
 
 # Vista para el perfil de los clientes
+@login_required
 def perfil_clientes(request):
     context = {}
     return render(request, "mzdportal/clientes.html", context)
@@ -194,13 +244,16 @@ def eventos(request):
 
     return render(request, "mzdportal/eventos.html", context)
 
+@login_required
 def evento_detalle(request, event_id):
     evento = get_object_or_404(SpecialEvent, event_id=event_id)
+
     return render(request, 'mzdportal/detalles_eventos.html', {'evento': evento})
 
+@login_required
 def registro_cliente_evento(request, event_id):
     evento = get_object_or_404(SpecialEvent, event_id=event_id)
-    
+    evento_instance = SpecialEvent.objects.get(event_id=evento.event_id)
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         email = request.POST.get('email')
@@ -221,27 +274,59 @@ def registro_cliente_evento(request, event_id):
             nombre=nombre,
             email=email,
             telefono=telefono,
-            tipo_vehiculo=vehiculo_interes,  # Aquí está la corrección
-            rango_precio=rango_precio,
+            tipo_vehiculo=vehiculo_interes,
             como_se_entero=como_se_entero,
-            fecha_compra_estimada=fecha_compra_estimada,
-            comentarios=comentarios,
             recibir_noticias=recibir_noticias,
             metodo_contacto_preferido=metodo_contacto_preferido,
             interes_financiamiento=interes_financiamiento,
             vehiculo_parte_pago=vehiculo_parte_pago,
             valoracion_evento=valoracion_evento,
-            feedback_evento=feedback_evento
+            feedback_evento=feedback_evento,
+            evento=evento_instance
         )
         cliente.save()
 
+
+
+        cliente_instance = Cliente_Registro_Evento.objects.get(email=email)
+
+        client_data = {
+            'client_id': cliente_instance.client_id,
+            'email': email,
+            'name': cliente.nombre,
+            'number': telefono,
+            'unidad_de_interes': vehiculo_interes,
+            'vendedor_asignado': "",
+        }
+
+        event_data = {
+            "event_type": "event registration",
+            "client_id" : cliente_instance.client_id,
+            "event_data": {
+                "concept": evento_instance.name,
+                "event_id": evento_instance.event_id
+            }
+        }
+
+        #enviar datos a la api
+        status_code = create_event_or_client(client_data, event_data,headers,api_url)
+        if status_code == 200 or status_code ==201:
+            print("cliente y evento creeado exitosamente")
+        else:
+            print("error")
         
-        return redirect('registro_cliente_evento')  # Cambia esto a la URL donde quieres redirigir después de un registro exitoso
+        return redirect(reverse('registro_cliente_evento', args=[evento.event_id]))  # Cambia esto a la URL donde quieres redirigir después de un registro exitoso
 
     context = {
         'evento': evento,
     }
     return render(request, 'mzdportal/registro_cliente_evento.html', context)
+
+@login_required
+def ver_clientes_evento(request, event_id):
+    evento = get_object_or_404(SpecialEvent, pk=event_id)
+    clientes = Cliente_Registro_Evento.objects.filter(evento=evento)
+    return render(request, 'mzdportal/clientesRegistradosEvento.html', {'clientes': clientes, 'evento': evento})
 # Vista para cerrar sesión
 def logout_view(request):
     logout(request)

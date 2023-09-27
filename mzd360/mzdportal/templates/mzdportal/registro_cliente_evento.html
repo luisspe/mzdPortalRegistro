@@ -21,7 +21,7 @@
 
 <div class="container mx-auto mt-6 h-screen">
     <div class="bg-white p-5 rounded shadow">
-        <h2 class="text-2xl font-bold mb-4">Registro de Clientes - Evento de Autos</h2>
+        <h2 class="text-2xl font-bold mb-4">Registro de Clientes - {{evento.name}}</h2>
         
         <form action="{% url 'registro_cliente_evento' evento.event_id %}" method="post">
             {% csrf_token %}
@@ -43,10 +43,6 @@
             </div>
 
             <!-- Información del Vehículo de Interés -->
-            <div class="mb-4">
-                <label for="modelo" class="block text-sm font-medium text-gray-700">Modelo de Interés:</label>
-                <input type="text" id="modelo" name="modelo" class="mt-1 p-2 w-full border rounded-md">
-            </div>
 
             <div class="mb-4">
                 <label for="vehiculo_interes" class="block text-sm font-medium text-gray-700">Vehículo de Interés:</label>
@@ -65,26 +61,12 @@
                 </select>
             </div>
 
-            <div class="mb-4">
-                <label for="rango_precio" class="block text-sm font-medium text-gray-700">Rango de Precio:</label>
-                <input type="text" id="rango_precio" name="rango_precio" placeholder="Ejemplo: $20,000 - $30,000" class="mt-1 p-2 w-full border rounded-md">
-            </div>
-
             <!-- Información Adicional -->
             <div class="mb-4">
                 <label for="entero_evento" class="block text-sm font-medium text-gray-700">¿Cómo se enteró del evento?</label>
                 <input type="text" id="entero_evento" name="entero_evento" class="mt-1 p-2 w-full border rounded-md">
             </div>
 
-            <div class="mb-4">
-                <label for="fecha_compra" class="block text-sm font-medium text-gray-700">Fecha Estimada de Compra:</label>
-                <input type="date" id="fecha_compra" name="fecha_compra" class="mt-1 p-2 w-full border rounded-md">
-            </div>
-
-            <div class="mb-4">
-                <label for="comentarios" class="block text-sm font-medium text-gray-700">Comentarios o Preguntas:</label>
-                <textarea id="comentarios" name="comentarios" rows="4" class="mt-1 p-2 w-full border rounded-md"></textarea>
-            </div>
 
             <!-- Preferencias de Contacto -->
             <div class="mb-4">
@@ -137,8 +119,11 @@
 
             <!-- Botón de Envío -->
             <div class="mt-4">
-                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Registrar Cliente</button>
+                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mr-6">Registrar Cliente</button>
+                <a class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" href="{% url 'evento_detalle' evento.event_id %}">Regresar</a>
             </div>
+            
+
         </form>
     </div>
 </div>
