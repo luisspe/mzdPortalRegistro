@@ -135,19 +135,25 @@ def create_event_or_client(request, client_info, event_info, headers, api_url):
     Si el cliente ya existe, solo crea el evento.
     Si el cliente no existe, primero crea el cliente y luego el evento.
     """
+    client_id = None
     response = requests.get(f"{api_url}clients/query/{client_info['email']}/", headers=headers)
     if response.status_code == 200:
         client_data = response.json()
         client_id = client_data['client_id']
-        #num_visits = get_number_of_visits(client_id, headers, api_url)
-        #event_info["event_data"]["visit"] = f"P{num_visits + 1}"
+        update_response = requests.put(f"{api_url}clients/{client_id}/", headers=headers, json=client_info)
+        if update_response.status_code != 200:
+            print("Error al actualizar la información del cliente")
+            print(update_response.json())  # Esto imprimirá la respuesta completa para que puedas ver qué salió mal
+
     else:
-        client_id = str(uuid4())
-        client_info['client_id'] = client_id
+        if 'client_id' not in client_info:
+            client_id = str(uuid4())
+            client_info['client_id'] = client_id
         response = requests.post(f"{api_url}clients/create/", headers=headers, json=client_info)
         if response.status_code == 201:
             #event_info["event_data"]['visit'] = "P1"
-            event_info['client_id'] = client_id
+            if 'client_id' not in event_info:
+                event_info['client_id'] = client_id
             response = requests.post(f"{api_url}events/create/", headers=headers, json=event_info)
             return client_id, "Evento creado exitosamente" if response.status_code == 201 else "Error al crear el evento"
     event_info['client_id'] = client_id
@@ -290,31 +296,33 @@ def registro_cliente_evento(request, event_id):
 
         cliente_instance = Cliente_Registro_Evento.objects.get(email=email)
 
-        client_data = {
-            'client_id': cliente_instance.client_id,
+        client_info = {
+            'client_id': str(cliente_instance.client_id),
             'email': email,
             'name': cliente.nombre,
             'number': telefono,
             'unidad_de_interes': vehiculo_interes,
-            'vendedor_asignado': "",
+            'vendedor_asignado': "Por asignar",
         }
 
-        event_data = {
+        event_info = {
             "event_type": "event registration",
-            "client_id" : cliente_instance.client_id,
+            "client_id" : str(cliente_instance.client_id),
             "event_data": {
                 "concept": evento_instance.name,
-                "event_id": evento_instance.event_id
+                "event_id": str(evento_instance.event_id)
             }
         }
 
         #enviar datos a la api
-        status_code = create_event_or_client(client_data, event_data,headers,api_url)
-        if status_code == 200 or status_code ==201:
-            print("cliente y evento creeado exitosamente")
+
+        client_id, result = create_event_or_client(request, client_info, event_info, headers, api_url)
+        if result == "Evento creado exitosamente":
+            print("Cliente y evento creados exitosamente")
         else:
-            print("error")
-        
+            print("Error al crear cliente y evento")
+            print(result)  # Esto imprimirá la respuesta completa para que puedas ver qué salió mal
+
         return redirect(reverse('registro_cliente_evento', args=[evento.event_id]))  # Cambia esto a la URL donde quieres redirigir después de un registro exitoso
 
     context = {
