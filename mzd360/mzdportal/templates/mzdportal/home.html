@@ -67,7 +67,20 @@
           
           <div class="nav-menu">
             <ul>
-              <li class="active"><a href="/" class="d-flex align-items-center"><span class="wrap-icon icon-home2 mr-3"></span><span class="menu-text">Visitas</span></a></li>
+              
+              <li>
+                <div class="dropdown">
+                  <a href="#" class="d-flex align-items-center dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="wrap-icon icon-home2 mr-3"></span>
+                    <span class="menu-text">Registrar visitas</span>
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="/" class="dropdown-item"><span class="wrap-icon icon-home2 mr-3"></span><span class="menu-text">Visitas</span></a>
+                    <a class="dropdown-item" href="/ruta-a-tu-vista"><span class="wrap-icon icon-calendar mr-3"></span>Ver visitas por fecha</a>
+                  </div>
+                </div>
+              </li>
+          
               <li><a href="/perfil-clientes" class="d-flex align-items-center"><span class="wrap-icon icon-shopping-cart mr-3"></span><span class="menu-text">Clientes</span></a></li>
               <li><a href="/registro/eventos" class="d-flex align-items-center"><span class="wrap-icon icon-book mr-3"></span><span class="menu-text">Eventos</span></a></li>
               <li><a href="/logout" class="d-flex align-items-center"><span class="wrap-icon icon-cog mr-3"></span><span class="menu-text">Logout</span></a></li>
