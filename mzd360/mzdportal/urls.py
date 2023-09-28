@@ -18,7 +18,8 @@ urlpatterns = [
     path('evento/<uuid:event_id>/', views.evento_detalle, name='evento_detalle'),
     path('registro/cliente/evento/<uuid:event_id>/', views.registro_cliente_evento, name='registro_cliente_evento'),
     path('ver/clientes/evento/<uuid:event_id>/', views.ver_clientes_evento, name='ver_clientes_evento'),
-    path('export/excel/', views.export_clientes_excel, name='export_clientes_excel'),
-
+    path('export/excel/<uuid:event_id>', views.export_clientes_excel, name='export_clientes_excel'),
+    path('visitas/fecha', views.visitas_sucursal_fecha, name='visitas_fecha'),
+    path('export_visitas_excel/', views.export_visitas_excel, name='export_visitas_excel'),
     
 ]

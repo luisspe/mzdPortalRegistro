@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from .models import Visita, SpecialEvent, PerfilProspecto, Cliente_Registro_Evento
+from .models import Visita, SpecialEvent, PerfilProspecto, Cliente_Registro_Evento, Cliente_Registrado_Portal
 from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
 from uuid import uuid4
 from .forms import SpecialEventForm
+from datetime import datetime
 
 #excel
 import xlwt
@@ -20,12 +21,61 @@ headers = {'x-api-key': 'IUPDlxEc2i2xxCYpmmnGL2JmqhVRkQba1n9Tbl6B'}
 def createUser(request):
     return render(request, 'mzdportal/create-account.html')
 
-def export_clientes_excel(request):
+def export_visitas_excel(request):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="Clientes registrados.xls"'
-
+    response['Content-Disposition'] = 'attachment; filename="Visitas Registradas.xls"'
+    
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Clientes')
+    ws = wb.add_sheet('Visitas Registradas')
+
+    # Define las columnas
+    columns = [
+        'Nombre', 'Email', 'Teléfono', 'Unidad de Interés',
+        'Vendedor', 'Concepto', 'Fecha y Hora de Check-in'
+    ]
+
+    # Escribe las columnas en la hoja
+    for col_num, column_title in enumerate(columns):
+        ws.write(0, col_num, column_title)
+
+    # Obtiene los datos de las visitas
+    visitas = Visita.objects.all()
+
+    # Crear una lista para almacenar las tuplas de (visita, cliente)
+    visitas_clientes = []
+
+    for visita in visitas:
+        
+        try:
+            cliente = Cliente_Registrado_Portal.objects.get(client_id=visita.client_id)
+            visitas_clientes.append((visita, cliente))
+        except Cliente_Registrado_Portal.DoesNotExist:
+            print(f"El cliente con client_id {visita.client_id} no existe")
+            continue
+
+    row_num = 1
+    for visita, cliente in visitas_clientes:
+        fecha_hora_checkin_str = visita.fecha_hora_checkin.strftime('%Y-%m-%d %H:%M:%S') if isinstance(visita.fecha_hora_checkin, datetime) else visita.fecha_hora_checkin
+        row = [
+            cliente.nombre, cliente.correo, cliente.numero, visita.unidad_de_interes,
+            visita.vendedor_id, visita.concepto, fecha_hora_checkin_str
+        ]
+        for col_num, cell_value in enumerate(row):
+            ws.write(row_num, col_num, cell_value)
+
+        row_num += 1
+
+    wb.save(response)
+    return response
+
+
+def export_clientes_excel(request, event_id):
+    response = HttpResponse(content_type='application/ms-excel')
+    evento = SpecialEvent.objects.get(event_id=event_id)
+    response['Content-Disposition'] = f'attachment; filename="Clientes registrados {evento.name} .xls"'
+    
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Clientes Registrados')
 
     # Define las columnas
     columns = [
@@ -63,15 +113,19 @@ def export_clientes_excel(request):
 def home(request):
     return render(request, "mzdportal/home.html")
 
-# Vista para buscar un cliente
-# @login_required
-# def search_client(request, headers, api_url):
-#     context = {}
-#     if request.method == 'POST':
-#         search = request.POST.get('query')
-#         print(search)
-#         context['search'] = search
-#     return render(request, "mzdportal/visitas.html", context)
+#funcion para buscar cliente con su client_id 
+def fetch_client_by_id(request):
+    if request.method == 'GET':
+        client_id = request.GET.get('client_id', None)
+        if client_id:
+            response = requests.get(f"{api_url}clients/{client_id}/", headers=headers)
+            if response.status_code == 200:
+                client_data = response.json()
+                return JsonResponse(client_data)
+            else:
+                return JsonResponse({"error": "Cliente no encontrado"}, status=404)
+        else:
+            return JsonResponse({"error": "ID del cliente no proporcionado"}, status=400)
 
 
 # Funcion para buscar client por email y rellenar los campos del formulario automaticamente
@@ -193,6 +247,20 @@ def visitas(request):
             unidad_de_interes=unidad,
             concepto=concepto
         )
+
+        client_exist = Cliente_Registrado_Portal.objects.filter(client_id=client_id).count()
+        if client_exist < 1:
+
+            cliente_registrado_portal = Cliente_Registrado_Portal(
+                client_id=client_id,
+                vendedor_id=vendedor,
+                unidad_de_interes=unidad,
+                nombre=nombre,
+                correo=correo,
+                numero=numero
+            )
+            cliente_registrado_portal.save()
+
         visita.save()
         
     # Obtener eventos del día
@@ -208,9 +276,12 @@ def visitas(request):
             if client_response.status_code == 200:
                 client_data = client_response.json()
                 event['client'] = client_data
+                
                 events.append(event)
+    
     context['page_title'] = 'Control visitas'
     context['events'] = events
+    
     return render(request, "mzdportal/visitas.html", context)
 
 # Vista para el perfil de los clientes
@@ -335,6 +406,36 @@ def ver_clientes_evento(request, event_id):
     evento = get_object_or_404(SpecialEvent, pk=event_id)
     clientes = Cliente_Registro_Evento.objects.filter(evento=evento)
     return render(request, 'mzdportal/clientesRegistradosEvento.html', {'clientes': clientes, 'evento': evento})
+
+@login_required
+def visitas_sucursal_fecha(request):
+    context = {}
+    if request.method == 'POST':
+        fecha_inicio_str = request.POST.get('fecha_inicio')
+        fecha_fin_str = request.POST.get('fecha_fin')
+        
+        fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+        fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+        
+        
+        visitas = Visita.objects.filter(fecha_hora_checkin__date__range=(fecha_inicio, fecha_fin))
+
+         # Crear una lista para almacenar las tuplas de (visita, cliente)
+        visitas_clientes = []
+
+        for visita in visitas:
+            try:
+                cliente = Cliente_Registrado_Portal.objects.get(client_id=visita.client_id)
+                visitas_clientes.append((visita, cliente))
+            except Cliente_Registrado_Portal.DoesNotExist:
+                print(f"El cliente con client_id {visita.client_id} no existe")
+
+        context['visitas_clientes'] = visitas_clientes
+        return render(request, 'mzdportal/visitas_sucursal_por_fecha.html', context)
+
+
+
+    return render(request, 'mzdportal/visitas_sucursal_por_fecha.html', context)
 # Vista para cerrar sesión
 def logout_view(request):
     logout(request)

@@ -132,11 +132,20 @@ class Cliente_Registro_Evento(models.Model):
 class Visita(models.Model):
     client_id = models.CharField(max_length=100)
     vendedor_id = models.CharField(max_length=100)
+    
+
     unidad_de_interes = models.CharField(max_length=100)
     concepto = models.CharField(max_length=50)
     fecha_hora_checkin = models.DateTimeField(auto_now_add=True)
-    fecha_hora_checkout = models.DateTimeField(null=True, blank=True)
+    
 
+class Cliente_Registrado_Portal(models.Model):
+    client_id = models.CharField(max_length=100)
+    vendedor_id = models.CharField(max_length=100)
+    correo = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100)
+    numero = models.CharField(max_length=25)
+    unidad_de_interes = models.CharField(max_length=100)
 
     
 
