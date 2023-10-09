@@ -1,0 +1,121 @@
+{% extends "mzdportal/home.html" %}
+
+{% block content %}
+
+<div class=" bg-gray-100 site-section h-screen">
+  <section class="h-full pb-16 overflow-y-auto">
+      <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-semibold py-7 px-5 flex-wrap">Hola {{ user.username }}!</h1>
+        <h1 class="font-thinner flex text-4xl pt-10 px-5">Actualiza tus datos</h1>
+        <form class="mx-5 my-5"  method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mt-5">
+            <label class="relative block p-3 border-2 border-black rounded" htmlFor="name">
+              <span class="text-md font-semibold text-zinc-900" htmlFor="name">
+                Nombres
+              </span>
+              <p class="w-full bg-transparent p-0 text-sm  text-gray-500 focus:outline-none" id="first_name" type="text" placeholder="Tus Nombres" >{{ u_form.first_name }}</p>
+            </label>
+            <div class="mt-5">
+              <label class="relative block p-3 border-2 border-black rounded" htmlFor="name">
+                <span class="text-md font-semibold text-zinc-900" htmlFor="name">
+                 Apellidos 
+                </span>
+                <p class="w-full bg-transparent p-0 text-sm  text-gray-500 focus:outline-none" id="last_name" type="text" placeholder="Tus Apellidos" >{{ u_form.last_name }}</p>
+              </label>
+            </div>
+          </div>
+          <div class="mt-5">
+            <label class="relative block p-3 border-2 border-black rounded" htmlFor="name">
+              <span class="text-md font-semibold text-zinc-900" htmlFor="name">
+                Tu usuario
+              </span>
+              <p class="w-full bg-transparent p-0 text-sm  text-gray-500 focus:outline-none" id="username" type="text" placeholder="Tu usuario" >{{ u_form.username }}</p>
+            </label>
+          </div>
+          
+          <div class="mt-5">
+            <label class="relative block p-3 border-2 border-black rounded" htmlFor="name">
+              <span class="text-md font-semibold text-zinc-900" htmlFor="name">
+                Correo
+              </span>
+              <p class="w-full bg-transparent p-0 text-sm  text-gray-500 focus:outline-none" id="" type="text" placeholder="Tu correo" >{{ u_form.email }}</p>
+            </label>
+          </div>
+          
+          <div class="shrink-0 mt-5 profile-container">
+            <div class="profile-image-container">
+                <img class="object-cover rounded-full" src="{{ user.profile.image.url }}" style="width:150px; height: 150px;" alt="Current profile photo" />
+            </div>
+            <div class="profile-upload-container">
+                <label class="block pt-2">
+                    <h5 class="t-2 text-dark text-gray-700">Escoge una foto de perfil</h5>
+                    <br>
+                    {% if p_form.image.errors %}
+                    <div class="text-red-500">{{ p_form.image.errors }}</div>
+                    {% endif %}
+                    <input type="file" name="{{ p_form.image.name }}" id="{{ p_form.image.id_for_label }}" class="border py-2 px-3 rounded">
+                </label>
+            </div>
+          </div>
+            
+
+          <Button type="submit" class="mt-5 border-2 px-5 py-2 rounded-lg border-black border-b-4 font-black translate-y-2 border-l-4">
+            Actualizar Perfil
+          </Button>
+          </form>
+      </div>
+      
+      
+
+
+      
+    </section>
+  </div>
+</div>
+<style>
+  .profile-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.profile-image-container,
+.profile-upload-container {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image-container {
+    width: 30%;
+}
+
+.profile-upload-container {
+    width: 70%;
+    text-align: start;
+    position: relative;
+}
+
+.profile-upload-container label {
+    position: absolute;
+    bottom: 0;
+}
+
+@media only screen and (max-width: 700px) {
+  .profile-container{
+    flex-direction: column;
+  }
+
+  .profile-image-container{
+    margin-bottom: 150px;
+    width: 100%;
+  }
+
+
+}
+</style>
+{% endblock content %}
+
+
+
+
+

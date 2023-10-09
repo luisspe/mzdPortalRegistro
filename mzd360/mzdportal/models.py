@@ -1,6 +1,40 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
+from PIL import Image
+
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='profile_pics/logo_slogan_azul.png', upload_to='profile_pics')
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+    # Override the save method of the model
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Make sure to include *args and **kwargs here
+
+        img = Image.open(self.image.path) # Open image
+
+        # resize image
+        
+        output_size = (200, 200)
+        img.thumbnail(output_size) # Resize image
+        img.save(self.image.path) # Save it again and override the larger image
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 class PerfilProspecto(models.Model):
     id_perfil = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

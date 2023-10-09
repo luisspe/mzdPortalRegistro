@@ -1,21 +1,64 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.views import View
+from django.core.serializers import serialize
+
 from django.urls import reverse
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Visita, SpecialEvent, PerfilProspecto, Cliente_Registro_Evento, Cliente_Registrado_Portal
 from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
 from uuid import uuid4
 from .forms import SpecialEventForm
+
 from datetime import datetime
+#credentials
+from decouple import config
 
 #excel
 import xlwt
 
 # Configuración de la API
-api_url = 'https://5pej009iy2.execute-api.us-east-1.amazonaws.com/dev/apimzd/'
-headers = {'x-api-key': 'IUPDlxEc2i2xxCYpmmnGL2JmqhVRkQba1n9Tbl6B'}
+api_url = config('API_URL')
+API_HEADER_AUTHORIZATION = config('API_KEY')
+headers = {
+    'x-api-key': API_HEADER_AUTHORIZATION
+}
+
+
+
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST,
+                                   request.FILES,
+                                   instance=request.user.profile)
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('profile') # Redirect back to profile page
+
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+
+    return render(request, 'mzdportal/profile.html', context)
+
+
+
+
 
 # Vista para crear un usuario
 def createUser(request):
@@ -111,7 +154,8 @@ def export_clientes_excel(request, event_id):
 # Vista de inicio
 @login_required
 def home(request):
-    return render(request, "mzdportal/home.html")
+
+    return render(request, "mzdportal/home.html", {'user': request.user})
 
 #funcion para buscar cliente con su client_id 
 def fetch_client_by_id(request):
@@ -159,7 +203,7 @@ def fetch_client_visits(request):
                 events = events_response.json()
                 events_list = events.get('events', [])
                 
-                visit_events = [event for event in events_list if event['event_type'] == 'visit']
+                visit_events = [event for event in events_list if event['event_type'] == 'visit_registration']
                 
                 return JsonResponse({'events': visit_events, 'client': client_data})
             else:
@@ -233,7 +277,7 @@ def visitas(request):
             'vendedor_asignado': vendedor
         }
         event_info = {
-            "event_type": "visit",
+            "event_type": "visit_registration",
             "event_data": {
                 "concept": concepto
             }
@@ -377,10 +421,10 @@ def registro_cliente_evento(request, event_id):
         }
 
         event_info = {
-            "event_type": "event registration",
+            "event_type": "event_registration",
             "client_id" : str(cliente_instance.client_id),
             "event_data": {
-                "concept": evento_instance.name,
+                "concept": evento_instance.name  + " registration",
                 "event_id": str(evento_instance.event_id)
             }
         }
