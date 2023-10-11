@@ -12,20 +12,27 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600&display=swap" rel="stylesheet">
 
-    <link rel="icon" type="image/x-icon" href="{% static 'mzdportal/assets/img/favicon.ico' %}">
-    
 
+    <!-- javascript of html templates -->
+    <script src="{% static 'mzdportal/assets/js/clientes.js' %}"></script>
+    <script src="{% static 'mzdportal/assets/js/eventos.js' %}"></script>
+    <script src="{% static 'mzdportal/assets/js/visitas.js' %}"></script>
+
+    <!--css of html templates -->
+    <link rel="stylesheet" href="{% static 'mzdportal/assets/css/card_animation.css' %}" />
+
+
+
+
+    <link rel="icon" type="image/x-icon" href="{% static 'mzdportal/assets/img/favicon.ico' %}">
     <!--<link rel="stylesheet" href="fonts/icomoon/style.css"> -->
     <link rel="stylesheet" href="{% static 'mzdportal/assets/sidebar/fonts/icomoon/style.css' %}">
     <!--font awesome icons-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    {% block imports %}
-
-    {% endblock %}
+    
    
     <!--TAILWIND-->
     <link rel="stylesheet" href="{% static 'mzdportal/assets/css/tailwind.output.css' %}" />
-    
     <script
       src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
       defer
@@ -36,12 +43,9 @@
 
 
     <!--SIDEBAR -->
-
     <link rel="stylesheet" href="{% static 'mzdportal/assets/sidebar/css/owl.carousel.min.css' %}">
     <link rel="stylesheet" href="{% static 'mzdportal/assets/sidebar/css/bootstrap.min.css' %}">
-        
     <link rel="stylesheet" href="{% static 'mzdportal/assets/sidebar/css/style.css' %}">
-
     <script src="{% static 'mzdportal/assets/sidebar/js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'mzdportal/assets/sidebar/js/popper.min.js' %}"></script>
     <script src="{% static 'mzdportal/assets/sidebar/js/bootstrap.min.js' %}"></script>
@@ -211,18 +215,8 @@
         </div>
       </header>
       {% block content %}
-      
-        <div class="site-section h-screen">
-          <h1>Dashboard futuro</h1>
-        </div>
-     
-        
-      
+  
       {% endblock %}
-    
-    
-
-    
 
   </body>
 </html>
