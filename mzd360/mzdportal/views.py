@@ -278,6 +278,7 @@ def visitas(request):
         }
         event_info = {
             "event_type": "visit_registration",
+            "event_source": "physical_location",
             "event_data": {
                 "concept": concepto
             }
@@ -421,6 +422,7 @@ def registro_cliente_evento(request, event_id):
         }
 
         event_info = {
+            "event_source": "physical_location",
             "event_type": "event_registration",
             "client_id" : str(cliente_instance.client_id),
             "event_data": {
