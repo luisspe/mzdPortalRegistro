@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td class="px-4 py-3">${client.number}</td>
                     <td class="px-4 py-3">${client.unidad_de_interes}</td>
                     <td class="px-4 py-3">${client.vendedor_asignado}</td>
-                    <td class="px-4 py-3">${client.visit}</td>
+                    <td class="px-4 py-3">${event.event_data.concept}</td>
                     <td class="px-4 py-3">${event.timestamp}</td>
                 </tr>
             `;
