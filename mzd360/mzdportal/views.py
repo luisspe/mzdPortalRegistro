@@ -197,7 +197,7 @@ def fetch_client_visits(request):
 
             # Buscar eventos de tipo "visita" para el cliente
             client_id = client_data['client_id']
-            events_response = requests.get(f"{api_url}client/{client_id}/events/", headers=headers)
+            events_response = requests.get(f"{api_url}clients/{client_id}/events/", headers=headers)
     
             if events_response.status_code == 200:
                 events = events_response.json()
@@ -309,14 +309,14 @@ def visitas(request):
         visita.save()
         
     # Obtener eventos del día
-    events_url = 'https://5pej009iy2.execute-api.us-east-1.amazonaws.com/dev/apimzd/events/today-visits/'
+    events_url = 'https://lbvj22e1he.execute-api.us-east-1.amazonaws.com/dev/events/today-visits/'
     response = requests.get(events_url, headers=headers)
     events = []
     if response.status_code == 200:
         events_data = response.json()
         for event in events_data:
             client_id = event.get('client_id')
-            client_url = f'https://5pej009iy2.execute-api.us-east-1.amazonaws.com/dev/apimzd/clients/{client_id}/'
+            client_url = f'https://lbvj22e1he.execute-api.us-east-1.amazonaws.com/dev/clients/{client_id}/'
             client_response = requests.get(client_url, headers=headers)
             if client_response.status_code == 200:
                 client_data = client_response.json()
