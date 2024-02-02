@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = 'django-insecure-o9%^m@r5077p4$^^3)k*cj*i$lnfwullg3)x#s#e2n4&w&h3c8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 
 API_KEY = config('API_KEY')
 
@@ -41,7 +41,7 @@ GOOGLE_TOKEN_URI = config('GOOGLE_TOKEN_URI')
 GOOGLE_AUTH_PROVIDER_CERT_URL = config('GOOGLE_AUTH_PROVIDER_CERT_URL')
 GOOGLE_REDIRECT_URIS = config('GOOGLE_REDIRECT_URIS', cast=Csv())
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dev-registro-visitas.eba-gwppisvh.us-east-1.elasticbeanstalk.com']
 
 
 
