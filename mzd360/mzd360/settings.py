@@ -41,7 +41,7 @@ GOOGLE_TOKEN_URI = config('GOOGLE_TOKEN_URI')
 GOOGLE_AUTH_PROVIDER_CERT_URL = config('GOOGLE_AUTH_PROVIDER_CERT_URL')
 GOOGLE_REDIRECT_URIS = config('GOOGLE_REDIRECT_URIS', cast=Csv())
 
-ALLOWED_HOSTS = ['dev-registro-visitas.eba-gwppisvh.us-east-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['*']
 
 
 
