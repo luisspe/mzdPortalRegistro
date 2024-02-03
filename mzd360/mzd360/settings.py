@@ -29,7 +29,7 @@ DEBUG = True
 API_KEY = config('API_KEY')
 
 
-
+ALLOWED_HOSTS = ['*']
 
 
 # Google OAuth settings
@@ -41,7 +41,7 @@ GOOGLE_TOKEN_URI = config('GOOGLE_TOKEN_URI')
 GOOGLE_AUTH_PROVIDER_CERT_URL = config('GOOGLE_AUTH_PROVIDER_CERT_URL')
 GOOGLE_REDIRECT_URIS = config('GOOGLE_REDIRECT_URIS', cast=Csv())
 
-ALLOWED_HOSTS = ['*']
+
 
 
 
