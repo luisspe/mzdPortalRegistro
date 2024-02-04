@@ -29,7 +29,7 @@ DEBUG = True
 API_KEY = config('API_KEY')
 
 
-ALLOWED_HOSTS = ['dev-registro-visitas.eba-gwppisvh.us-east-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['172.31.18.122', '*']
 
 
 # Google OAuth settings
