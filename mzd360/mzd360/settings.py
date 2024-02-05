@@ -29,7 +29,7 @@ DEBUG = True
 API_KEY = config('API_KEY')
 
 
-ALLOWED_HOSTS = ['172.31.18.122', '*']
+ALLOWED_HOSTS = ['']
 
 
 # Google OAuth settings
